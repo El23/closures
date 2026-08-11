@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мониторинг перекрытия дорог</title>
+    <style>
+        :root {
+            --bg-color: #f4f6f9;
+            --card-bg: #ffffff;
+            --text-color: #333333;
+            --primary-color: #2563eb;
+            --primary-hover: #1d4ed8;
+            --border-color: #e5e7eb;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            max-width: 1000px;
+            width: 100%;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        h1 {
+            text-align: center;
+            color: #1e293b;
+            margin-bottom: 10px;
+        }
+
+        p.subtitle {
+            text-align: center;
+            color: #64748b;
+            margin-bottom: 30px;
+        }
+
+        .date-badge {
+            display: inline-block;
+            background-color: #e0e7ff;
+            color: #3730a3;
+            padding: 4px 12px;
+            border-radius: 9999px;
+            font-weight: 600;
+        }
+
+        .cities-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 12px;
+        }
+
+        .city-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+            text-decoration: none;
+            box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2);
+        }
+
+        .city-btn:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(37, 99, 235, 0.3);
+        }
+
+        .city-btn:active {
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Поиск перекрытий дорог по городам</h1>
+    <p class="subtitle">
+        Запросы автоматически формируются с поиском по состоянию на сегодня: 
+        <span id="current-date" class="date-badge"></span>
+    </p>
+
+    <div class="cities-grid" id="cities-container">
+        <!-- Кнопки городов генерируются автоматически -->
+    </div>
+</div>
+
+<script>
+    // Список всех указанных городов
+    const cities = [
+        "Київ", "Дніпро", "Одеса", "Львів", "Харків", 
+        "Біла Церква", "Вінниця", "Житомир", "Запоріжжя", "Івано-Франківськ", 
+        "Кам'янець-Подільський", "Кам'янське", "Кременчук", "Кривий Ріг", "Кропивницький", 
+        "Луцьк", "Миколаїв", "Полтава", "Рівне", "Суми", 
+        "Тернопіль", "Ужгород", "Херсон", "Хмельницький", "Черкаси", 
+        "Чернівці", "Чернігів", "Буковель", "Олександрія"
+    ];
+
+    // Ключевые темы для Google Поиска
+    const topics = [
+        '"перекриття доріг"',
+        '"дорогу перекрито"',
+        '"перекриють скоро дорогу"',
+        '"перекриття вулиць"',
+        '"перекриття у зв\'язку з фестивалем"',
+        '"перекриття у зв\'язку з ремонтом доріг"',
+        '"ремонт дороги"'
+    ];
+
+    // Получение текущей даты в формате ДД.ММ.ГГГГ
+    const today = new Date();
+    const day = String(today.getDate()).padStart(2, '0');
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const year = today.getFullYear();
+    const formattedDate = `${day}.${month}.${year}`;
+
+    // Отображение даты на странице
+    document.getElementById('current-date').innerText = formattedDate;
+
+    // Функция генерации ссылки на Google
+    function createSearchUrl(city) {
+        // Объединяем темы через оператор OR
+        const topicsQuery = `(${topics.join(' OR ')})`;
+        
+        // Полный поисковый запрос
+        const fullQuery = `${topicsQuery} ${city} станом на ${formattedDate}`;
+        
+        return `https://www.google.com/search?q=${encodeURIComponent(fullQuery)}`;
+    }
+
+    // Генерация кнопок для каждого города
+    const container = document.getElementById('cities-container');
+    
+    cities.forEach(city => {
+        const button = document.createElement('a');
+        button.className = 'city-btn';
+        button.innerText = city;
+        button.href = createSearchUrl(city);
+        button.target = '_blank'; // Открывать в новой вкладке
+        button.rel = 'noopener noreferrer';
+        container.appendChild(button);
+    });
+</script>
+
+</body>
+</html>
